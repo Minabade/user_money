@@ -57,9 +57,11 @@ class AccountService:
 
     @staticmethod
     def deposit_fund(account_id: str, amount: Decimal):
-        account = AccountService.get_account_by_id(account_id).model_dump()
+        account = AccountService.get_account_by_id(account_id)
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
+        account=account.model_dump()
+
         old_balance = Decimal(str(account.get("balance", 0.0)))
         new_balance = old_balance + amount
 
@@ -71,18 +73,18 @@ class AccountService:
             account_id, amount, TransactionType.credit
         )
         return transaction_serializer(transaction)
-
+    
     @staticmethod
     def withdraw_fund(account_id: str, amount: Decimal, owner_id):
         account = AccountService.get_account_by_id(account_id)
         if account.user_id != owner_id:
-            raise HTTPException(status_code=403, detail="Unthorized to withdraw from account")
-        account = account.model_dump()
+            raise HTTPException(status_code=403, detail="Unauthorized to withdraw from account")
+        account=account.model_dump()
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
         old_balance = Decimal(str(account.get("balance", 0.0)))
-        if old_balance < amount:
-            raise HTTPException(status_code=400, detail="Insufficicient balance")
+        if old_balance<amount:
+            raise HTTPException(status_code=402, detail="insufficient balance")
 
         new_balance = old_balance - amount
 
@@ -94,6 +96,7 @@ class AccountService:
             account_id, amount, TransactionType.debit
         )
         return transaction_serializer(transaction)
+
 
 
 account_service = AccountService()

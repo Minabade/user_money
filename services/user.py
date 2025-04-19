@@ -20,6 +20,8 @@ class UserService:
     @staticmethod
     def get_user_by_email(email: str):
         user = users_collection.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
         return user_in_db_serializer(user)
 
     @staticmethod

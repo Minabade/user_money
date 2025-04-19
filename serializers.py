@@ -16,6 +16,8 @@ def user_serializer(user) -> User:
 
 
 def user_in_db_serializer(user) -> UserDb:
+    if not user:
+        raise ValueError("User data is None. Cannot serialize.")
     user_dict = {
         "id": str(user.get("_id")),
         "first_name": user.get("first_name"),
